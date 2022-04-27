@@ -8,19 +8,17 @@ use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 
 class PDFController extends Controller
 {
-    /**
-     * @throws \ReflectionException
-     */
     public function generatePDF()
     {
-        $path = public_path('media/merged.pdf');
+        $path = storage_path('app/documents/merged.pdf');
+
         if(File::exists($path)) {
             File::delete($path);
         }
 
         $pdf = PDFMerger::init();
         $this->imageToPdf();
-        $files = File::allFiles(public_path('media'));
+        $files = File::allFiles(storage_path('app/documents'));
 
         foreach($files as $file) {
             if ($file->getExtension() == 'pdf') {
@@ -31,15 +29,12 @@ class PDFController extends Controller
         $pdf->save($path);
     }
 
-    /**
-     * @throws \ReflectionException
-     */
     public function imageToPdf()
     {
-        $files = File::allFiles(public_path('media'));
+        $files = File::allFiles(storage_path('app/documents'));
         foreach($files as $file) {
             if ($file->getExtension() != 'pdf') {
-                $image = public_path('media/' . $file->getFilename());
+                $image = storage_path('app/documents/' . $file->getFilename());
                 $withoutExt = preg_replace('/\.[^.\s]{3,4}$/', '', $image);
                 if(defined('FPDF_VERSION')) {
                     $reflection = new ReflectionClass("FPDF");
